@@ -226,3 +226,10 @@ Expected deliverables include:
 7. Security testing evidence and an SBOM.
 8. Project documentation and operational runbooks.
 9. A final project demonstration and report.
+
+## Project Gantt Chart
+
+The Gantt chart below provides an overview of the project schedule, including activities, task allocation, planned start and end dates, and project progress.
+
+Click here to view the Automated Threat Enforcement System Gantt Chart⁠|
+https://github.com/Rofiat05/Automated-threat-enforcement-system/blob/main/Gantt%20Chart%20for%20Group.xlsx
