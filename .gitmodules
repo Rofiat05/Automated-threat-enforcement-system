@@ -1,3 +1,7 @@
 [submodule "Northmen-SOC-project"]
 	path = Northmen-SOC-project
 	url = https://github.com/Ismaduku/Northmen-SOC-project.git
+[submodule "northmen-soc-contribution"]
+	path = person_C_contribution/Northmen-SOC-project
+	url = https://github.com/Ismaduku/Northmen-SOC-project.git
+	branch = master
