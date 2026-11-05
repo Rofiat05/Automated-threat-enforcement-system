@@ -5,7 +5,7 @@
 This roadmap outlines the main phases, activities, responsibilities and deadlines for the Automated Threat Enforcement System project (COM 732). It provides a shared timeline to help all team members monitor progress, coordinate tasks and complete the project before the submission deadline.
 
 ### Project Team and Responsibilities
-Member                                                             Main Responsibilities
+Member                                                            Main Responsibilities
 
 Rofiat
 
