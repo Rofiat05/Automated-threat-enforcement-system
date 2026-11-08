@@ -1,0 +1,7 @@
+{
+  "openconfig-acl:acl": {
+    "state": {
+      "counter-capability": "openconfig-acl:AGGREGATE_ONLY"
+    }
+  }
+}

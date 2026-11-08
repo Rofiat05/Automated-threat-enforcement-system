@@ -1,0 +1,24 @@
+COM732 PERSON E - CISCO DRIVER ADD-ON
+
+1. Extract these files into your EXISTING COM732_Project folder. Keep your existing files.
+2. VS Code: Terminal > New Terminal.
+3. Terminal 1: python mock_device.py
+   Leave this terminal open (the mock device runs here).
+4. Terminal 2 (click + in Terminal): python driver_demo.py --ttl 5
+5. Run again within 5 seconds: python driver_demo.py --ttl 5
+   This should show ALREADY_PRESENT.
+6. After 5 seconds: python driver_demo.py --cleanup-only
+   This should show Expired blocks removed: ['192.0.2.15'].
+7. Test: python -m unittest discover -s tests -v
+8. For ALL tests (including previous root tests): python -m unittest discover -v
+   Note: depending on discovery configuration, nested tests may require -s tests.
+9. Capture screenshots of mock device, apply, duplicate, rollback and test outputs.
+10. GitHub: commit ONLY your assigned cisco_driver/ code, tests and relevant setup files after coordinating with your team. Do not commit real tokens, passwords, or generated audit/state files.
+
+LIMITATIONS:
+- This uses a LOCAL mock RESTCONF-style HTTP API, NOT a Cisco IOS XE device.
+- The /restconf/data/mock-acl endpoint is educational, NOT a real Cisco YANG path.
+- The demo uses HTTP on localhost only. Real devices require HTTPS, verified TLS, an authorised account and a validated IOS XE model.
+- Cleanup is invoked manually. For production, schedule it and handle service failures/restarts.
+- The approved=True flag is a demo stand-in for upstream authorisation; it is NOT authentication. A production driver must trust only authenticated requests from Eunice's API.
+- The mock stores state locally and is not hardened for concurrent real-world use.

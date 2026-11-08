@@ -1,0 +1,17 @@
+{"timestamp": "2026-11-05T07:09:45.885713+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-05T07:10:15.856594+00:00"}
+{"timestamp": "2026-11-05T07:13:56.724036+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "already_present", "expires_at": "2026-11-05T07:10:15.856594+00:00"}
+{"timestamp": "2026-11-05T07:13:56.753008+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-05T07:10:15.856594+00:00"}
+{"timestamp": "2026-11-05T07:25:02.873675+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-05T07:25:32.847490+00:00"}
+{"timestamp": "2026-11-05T07:28:06.362023+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "already_present", "expires_at": "2026-11-05T07:25:32.847490+00:00"}
+{"timestamp": "2026-11-05T07:28:06.385139+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-05T07:25:32.847490+00:00"}
+{"timestamp": "2026-11-05T07:28:06.780147+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-05T07:30:06.746053+00:00"}
+{"timestamp": "2026-11-05T18:02:11.973515+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "failed:DeviceError", "expires_at": null}
+{"timestamp": "2026-11-05T23:12:32.632896+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "already_present", "expires_at": "2026-11-05T07:30:06.746053+00:00"}
+{"timestamp": "2026-11-05T23:12:32.664276+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-05T07:30:06.746053+00:00"}
+{"timestamp": "2026-11-05T23:15:20.835280+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-05T23:17:20.810470+00:00"}
+{"timestamp": "2026-11-05T23:18:17.636513+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "already_present", "expires_at": "2026-11-05T23:17:20.810470+00:00"}
+{"timestamp": "2026-11-05T23:18:17.672244+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-05T23:17:20.810470+00:00"}
+{"timestamp": "2026-11-06T01:32:34.780177+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-06T01:33:04.758814+00:00"}
+{"timestamp": "2026-11-06T01:36:17.939567+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-06T01:33:04.758814+00:00"}
+{"timestamp": "2026-11-07T23:21:37.951085+00:00", "action": "block", "source_ip": "192.0.2.15", "status": "applied", "expires_at": "2026-11-07T23:22:07.923196+00:00"}
+{"timestamp": "2026-11-07T23:22:59.646447+00:00", "action": "unblock", "source_ip": "192.0.2.15", "status": "removed", "expires_at": "2026-11-07T23:22:07.923196+00:00"}
