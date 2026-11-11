@@ -7,8 +7,16 @@ from seal_check import make_signature
 
 SECRET = b"test-secret"
 NOW = 1762246800
-GOOD = {"host": "web01", "source_ip": "203.0.113.7",
-        "count": 5, "criticality": "high"}
+GOOD = {
+    "host": "web01",
+    "source_ip": "203.0.113.7",
+    "window_start": "Nov 05 10:00:00",
+    "window_end": "Nov 05 10:05:00",
+    "failed_attempts": 5,
+    "criticality": "high",
+    "threshold": 5,
+    "alert": True,
+}
 
 
 def make_body(alert=GOOD):
@@ -47,6 +55,13 @@ def test_command_hidden_in_ip_is_rejected(tmp_path):
     assert "source_ip" in result[1]
 
 
+def test_alert_below_threshold_is_rejected(tmp_path):
+    below = dict(GOOD, alert=False)
+    result = send(tmp_path, body=make_body(below))
+    assert result[0] == "rejected"
+    assert "below threshold" in result[1]
+
+
 def test_alert_changed_after_sealing_is_rejected(tmp_path):
     original = make_body()
     sig = make_signature(SECRET, str(NOW), "nonce-1", original)
@@ -80,6 +95,17 @@ def test_same_attack_with_new_nonce_is_a_duplicate(tmp_path):
     result = send(tmp_path, nonce="nonce-2", nonce_store=nonces,
                   id_store=ids, now=NOW + 5)
     assert result == ("rejected", "duplicate alert")
+
+
+def test_same_ip_in_a_later_window_is_not_a_duplicate(tmp_path):
+    nonces = NonceStore()
+    ids = AlertIdStore()
+    send(tmp_path, nonce="nonce-1", nonce_store=nonces, id_store=ids)
+    later = dict(GOOD, window_start="Nov 05 10:05:00",
+                 window_end="Nov 05 10:10:00")
+    result = send(tmp_path, body=make_body(later), nonce="nonce-2",
+                  nonce_store=nonces, id_store=ids, now=NOW + 5)
+    assert result == ("accepted", "all checks passed")
 
 
 def test_decision_is_written_to_the_audit_log(tmp_path):
