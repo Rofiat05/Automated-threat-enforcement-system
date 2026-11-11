@@ -8,8 +8,6 @@ from freshness_check import timestamp_is_fresh
 from replay_check import NonceStore
 from seal_check import signature_is_valid
 
-WINDOW_SECONDS = 300
-
 
 def _reject(audit_path, now, alert_id, reason):
     write_audit(audit_path, now, alert_id, "rejected", reason)
@@ -45,10 +43,9 @@ def handle_alert(body, timestamp, nonce, signature, secret,
     if nonce_store.is_replay(nonce, now):
         return _reject(audit_path, now, None, "nonce was already used (replay)")
 
-    # check 5: duplicate
-    window_start = int(timestamp) // WINDOW_SECONDS * WINDOW_SECONDS
+    # check 5: duplicate (same host, IP and window)
     alert_id = make_alert_id(alert["host"], alert["source_ip"],
-                             window_start, WINDOW_SECONDS)
+                             alert["window_start"], alert["window_end"])
     if id_store.is_duplicate(alert_id, now):
         return _reject(audit_path, now, alert_id, "duplicate alert")
 
