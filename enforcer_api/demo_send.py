@@ -1,5 +1,6 @@
 import json
 import os
+import ssl
 import sys
 import time
 
@@ -7,8 +8,16 @@ import httpx
 
 from sign_helper import make_signed_headers
 
-URL = "http://127.0.0.1:8000/v1/alerts"
+URL = os.environ.get("ALERT_URL", "https://localhost:8443/v1/alerts")
 TIME_FORMAT = "%b %d %H:%M:%S"
+
+
+def make_ssl_context():
+    # certificate checking stays ON; we only add our own certificate as trusted
+    cert_file = os.environ.get("ALERT_CERT_FILE")
+    if cert_file:
+        return ssl.create_default_context(cafile=cert_file)
+    return ssl.create_default_context()
 
 
 def fresh_alert(**changes):
@@ -35,7 +44,8 @@ def to_body(alert):
 def post(secret, body, headers=None):
     if headers is None:
         headers = make_signed_headers(body, secret)
-    return httpx.post(URL, content=body, headers=headers, timeout=5.0)
+    return httpx.post(URL, content=body, headers=headers, timeout=5.0,
+                      verify=make_ssl_context())
 
 
 def show(label, response):
@@ -110,8 +120,9 @@ def main():
     try:
         for scenario in chosen:
             scenario(secret)
-    except httpx.ConnectError:
-        print("Could not reach the service. Is it running on port 8000?")
+    except httpx.ConnectError as error:
+        print("Could not connect to the service: " + str(error))
+        print("Check that it is running, and that ALERT_CERT_FILE is set.")
         sys.exit(1)
 
 
