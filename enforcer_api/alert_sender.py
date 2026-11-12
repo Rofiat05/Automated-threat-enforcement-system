@@ -3,6 +3,7 @@ import os
 import ssl
 import sys
 import time
+import urllib.parse
 
 import httpx
 
@@ -43,6 +44,17 @@ def make_ssl_context(cert_file=None):
     return ssl.create_default_context()
 
 
+def check_url(url):
+    """Refuse anything that is not a plain HTTPS address."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme.lower() != "https":
+        raise ValueError("Only HTTPS addresses are allowed.")
+    if not parsed.hostname:
+        raise ValueError("The address needs a host name.")
+    if parsed.username or parsed.password:
+        raise ValueError("The address must not contain a user name or password.")
+
+
 def send_alert(alert, secret, url, client, wait=WAIT_SECONDS):
     body = json.dumps(alert).encode("utf-8")
     last_error = None
@@ -76,8 +88,12 @@ def send_alert(alert, secret, url, client, wait=WAIT_SECONDS):
 
 def send_file(path, secret, url, cert_file=None, wait=WAIT_SECONDS,
               client=None):
-    alerts, bad_lines = read_alerts(path)
     own_client = client is None
+    if own_client:
+        # the sender is about to open its own connection, so the address
+        # must be a proper HTTPS address
+        check_url(url)
+    alerts, bad_lines = read_alerts(path)
     if own_client:
         client = httpx.Client(verify=make_ssl_context(cert_file), timeout=5.0)
     results = []
@@ -116,6 +132,9 @@ def main():
 
     try:
         report = send_file(sys.argv[1], secret.encode("utf-8"), url, cert_file)
+    except ValueError as error:
+        print("Not sent: " + str(error))
+        sys.exit(1)
     except OSError as error:
         print("Could not read a file: " + str(error))
         sys.exit(1)
