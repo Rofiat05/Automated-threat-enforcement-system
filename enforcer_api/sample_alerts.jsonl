@@ -1,0 +1,4 @@
+{"host": "NORTHMEN-WEBSERVER", "source_ip": "198.51.100.25", "window_start": "Nov 12 10:00:00", "window_end": "Nov 12 10:05:00", "failed_attempts": 9, "criticality": "medium", "threshold": 8, "alert": true}
+{"host": "NORTHMEN-DATABASE", "source_ip": "203.0.113.44", "window_start": "Nov 12 10:00:00", "window_end": "Nov 12 10:05:00", "failed_attempts": 6, "criticality": "high", "threshold": 5, "alert": true}
+{"host": "NORTHMEN-PC02", "source_ip": "198.51.100.77", "window_start": "Nov 12 10:00:00", "window_end": "Nov 12 10:05:00", "failed_attempts": 3, "criticality": "low", "threshold": 10, "alert": false}
+{"host": "NORTHMEN-MAILSERVER", "source_ip": "198.51.100.88; shutdown", "window_start": "Nov 12 10:00:00", "window_end": "Nov 12 10:05:00", "failed_attempts": 7, "criticality": "high", "threshold": 5, "alert": true}
