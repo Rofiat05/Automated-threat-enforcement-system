@@ -17,6 +17,7 @@ def aggregate_failed_logins(
     window_minutes=5,
     asset_criticality=None,
     thresholds_by_criticality=None,
+    log_year=2026,
 ):
     """
     Group failed login events by host, source IP and time window.
@@ -24,6 +25,10 @@ def aggregate_failed_logins(
     Return a summary containing the failure count,
     asset criticality, threshold and alert status.
     """
+
+    # Syslog timestamps have no year; use an explicit year for reproducible parsing.
+    if not isinstance(log_year, int) or not 1 <= log_year <= 9999:
+        raise ValueError("log_year must be a valid four-digit year.")
 
     # Validate the time-window setting.
     if (
@@ -72,8 +77,8 @@ def aggregate_failed_logins(
         # Convert the timestamp string into a datetime object.
         try:
             timestamp = datetime.strptime(
-                timestamp_text,
-                "%b %d %H:%M:%S"
+                f"{log_year} {timestamp_text}",
+                "%Y %b %d %H:%M:%S"
             )
         except (ValueError, TypeError):
             continue

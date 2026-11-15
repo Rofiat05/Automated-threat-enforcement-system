@@ -10,7 +10,8 @@ def run_preprocessor(
         output_path,
         window_minutes=5,
         asset_criticality=None,
-        thresholds_by_criticality=None
+        thresholds_by_criticality=None,
+        log_year=2026
 ):
     """Run the complete authentication-log preprocessing pipeline."""
 
@@ -32,7 +33,8 @@ def run_preprocessor(
         events,
         window_minutes=window_minutes,
         asset_criticality=asset_criticality,
-        thresholds_by_criticality=thresholds_by_criticality
+        thresholds_by_criticality=thresholds_by_criticality,
+        log_year=log_year
     )
 
     # Step 4: Write the generated summaries to JSONL.
