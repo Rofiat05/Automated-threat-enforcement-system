@@ -1,7 +1,7 @@
 from decision_stub import CONTROL_POINT, TTL_SECONDS, decide
 
 GOOD = {
-    "host": "NORTHMEN-WEBSERVER",
+    "host": "webserver",
     "source_ip": "198.51.100.25",
     "window_start": "Nov 12 10:00:00",
     "window_end": "Nov 12 10:05:00",
@@ -29,12 +29,12 @@ def test_answer_always_has_the_five_agreed_keys():
 
 
 def test_server_name_ignores_capital_letters():
-    answer = decide(dict(GOOD, host="northmen-webserver"))
-    assert answer["action"] == "block"
+    assert decide(dict(GOOD, host="WEBSERVER"))["action"] == "block"
+    assert decide(dict(GOOD, host="WebServer"))["action"] == "block"
 
 
 def test_server_name_ignores_spaces_around_it():
-    answer = decide(dict(GOOD, host="  NORTHMEN-WEBSERVER "))
+    answer = decide(dict(GOOD, host="  webserver "))
     assert answer["action"] == "block"
 
 
@@ -44,6 +44,12 @@ def test_unknown_server_is_ignored_with_a_reason():
     assert answer["reason"] == "server not in inventory"
     assert answer["ttl_seconds"] == 0
     assert answer["control_point"] is None
+
+
+def test_old_server_names_no_longer_match():
+    answer = decide(dict(GOOD, host="NORTHMEN-WEBSERVER"))
+    assert answer["action"] == "ignore"
+    assert answer["reason"] == "server not in inventory"
 
 
 def test_missing_host_is_ignored():
@@ -65,8 +71,8 @@ def test_our_own_machine_is_not_auto_blocked():
 
 
 def test_block_time_depends_on_how_important_the_server_is():
-    high = decide(dict(GOOD, host="NORTHMEN-DATABASE"))
-    low = decide(dict(GOOD, host="NORTHMEN-PC02"))
+    high = decide(dict(GOOD, host="dataserver"))
+    low = decide(dict(GOOD, host="pc02"))
     assert high["ttl_seconds"] == TTL_SECONDS["high"]
     assert low["ttl_seconds"] == TTL_SECONDS["low"]
     assert high["ttl_seconds"] > low["ttl_seconds"]
