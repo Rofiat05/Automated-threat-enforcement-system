@@ -1,7 +1,8 @@
 # STAND-IN for C's decide(alert).
 # It follows the rules C has described, so the whole chain can be tested.
 # When C's real function is ready, it replaces this file.
-# The data below is copied from C's asset_inventory.csv and allow_list.txt.
+# The server names, addresses and importance come from C's asset_inventory.csv
+# (17 Nov) and the allowlist from C's allow_list.txt.
 # The block times and the device name are placeholders to agree with C and E.
 
 CONTROL_POINT = "mock-router-1"
@@ -10,12 +11,12 @@ ALLOWLIST = {"192.168.1.10", "192.168.1.20"}
 
 # server name (small letters) -> (the machine's own IP address, importance)
 INVENTORY = {
-    "northmen-webserver": ("192.168.1.50", "medium"),
-    "northmen-database": ("192.168.1.60", "high"),
-    "northmen-pc01": ("192.168.1.70", "medium"),
-    "northmen-mailserver": ("192.168.1.80", "high"),
-    "northmen-fileserver": ("192.168.1.90", "high"),
-    "northmen-pc02": ("192.168.1.100", "low"),
+    "webserver": ("192.168.1.50", "medium"),
+    "dataserver": ("192.168.1.60", "high"),
+    "pc01": ("192.168.1.70", "medium"),
+    "mailserver": ("192.168.1.80", "high"),
+    "fileserver": ("192.168.1.90", "high"),
+    "pc02": ("192.168.1.100", "low"),
 }
 
 # how long a block lasts, in seconds, by importance

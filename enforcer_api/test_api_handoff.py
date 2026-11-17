@@ -8,7 +8,7 @@ from sign_helper import make_signed_headers
 
 SECRET = b"test-secret"
 GOOD = {
-    "host": "NORTHMEN-WEBSERVER",
+    "host": "webserver",
     "source_ip": "203.0.113.7",
     "window_start": "Nov 12 10:00:00",
     "window_end": "Nov 12 10:05:00",

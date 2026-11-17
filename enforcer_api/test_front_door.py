@@ -11,7 +11,7 @@ from seal_check import make_signature
 SECRET = b"test-secret"
 NOW = 1762246800
 GOOD = {
-    "host": "NORTHMEN-WEBSERVER",
+    "host": "webserver",
     "source_ip": "203.0.113.7",
     "window_start": "Nov 12 10:00:00",
     "window_end": "Nov 12 10:05:00",
