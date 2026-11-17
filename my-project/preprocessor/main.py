@@ -51,3 +51,41 @@ def run_preprocessor(
         "summaries_generated": len(summaries),
         "summaries_written": records_written
     }
+
+def main():
+
+    # Identify the main project directory.
+    project_root = Path(__file__).resolve().parent.parent
+
+    # Specify the authentication log.
+    input_log = project_root / "sample_data" / "auth.log"
+
+    # Specify where the output should be saved.
+    output_file = project_root / "output" / "auth_summaries.jsonl"
+
+    # Temporary sample asset-criticality mapping.
+    asset_criticality = {
+        "server01": "critical"
+    }
+
+    # Execute the preprocessing pipeline.
+    results = run_preprocessor(
+        log_file_paths=[input_log],
+        output_path=output_file,
+        window_minutes=5,
+        asset_criticality=asset_criticality
+    )
+
+    # Display the processing results.
+    print("\nCOM732 Authentication Log Preprocessor")
+    print("--------------------------------------")
+    print(f"Lines read: {results['lines_read']}")
+    print(f"Structured events: {results['structured_events']}")
+    print(f"Failed login events: {results['failed_login_events']}")
+    print(f"Summaries generated: {results['summaries_generated']}")
+    print(f"Summaries written: {results['summaries_written']}")
+    print(f"\nOutput saved to: {output_file}")
+
+
+if __name__ == "__main__":
+    main()
