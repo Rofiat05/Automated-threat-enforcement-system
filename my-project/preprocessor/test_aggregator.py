@@ -1,10 +1,17 @@
+from pathlib import Path
+
 from log_reader import read_log_file
 from parser import parse_log_line
 from aggregator import aggregate_failed_logins
 
 
+# Locate the sample authentication log using this file's location.
+# This works regardless of the folder where pytest is started.
+project_folder = Path(__file__).resolve().parent.parent
+log_path = project_folder / "sample_data" / "auth.log"
+
 # Load the sample authentication log.
-log_lines = read_log_file("../sample_data/auth.log")
+log_lines = read_log_file(str(log_path))
 
 # Parse each line into an event dictionary.
 events = [
@@ -21,14 +28,12 @@ summaries = aggregate_failed_logins(
     }
 )
 
-
 # Check that we have one relevant failed-login group.
 assert len(summaries) == 1, (
     "Expected one failed-login summary."
 )
 
 summary = summaries[0]
-
 
 # Check the aggregated failure count.
 assert summary["failed_attempts"] == 3, (
