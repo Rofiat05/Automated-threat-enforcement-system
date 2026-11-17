@@ -436,3 +436,49 @@ By 8 November, the main development focus had shifted towards reviewing the rema
 
 **Overall development status:** The main output and aggregation components have undergone successful testing. Further parser refinement and end-to-end integration remain outstanding.
 
+
+### Contribution Entry — End-to-End Preprocessor Development and Integration
+
+**Date:** 9–15 November 2026
+
+**Task:** Integration of the Linux authentication-log preprocessing components into a functional processing pipeline.
+
+**What I implemented:**
+
+- Reviewed the existing Python modules, including the log reader, authentication parser, aggregator, JSONL writer and HTTPS sender, to understand their functions and how they could communicate.
+- Created `preprocessor/main.py` to serve as the central entry point for coordinating the existing preprocessor components.
+- Implemented the `run_preprocessor()` function to coordinate log reading, event parsing, failed-login aggregation and JSONL output generation.
+- Integrated `read_log_files()` to retrieve authentication log entries and `parse_log_line()` to convert relevant entries into structured event dictionaries.
+- Connected `aggregate_failed_logins()` to process the parsed events, group failed authentication attempts by hostname, source IP and five-minute time window, and evaluate them against asset-criticality thresholds.
+- Integrated `write_jsonl()` to save the generated alert summaries in a structured JSON Lines output file.
+- Implemented the main execution function to identify input and output paths, provide temporary asset-criticality configuration for testing, execute the processing pipeline and display processing statistics.
+- Executed the complete pipeline using the existing `sample_data/auth.log` file through the Python module execution command.
+
+**Testing and Results:**
+
+Successfully executed the complete authentication-log preprocessing pipeline using:
+
+`python -m preprocessor.main`
+
+The execution produced the following results:
+
+- Lines read: 4
+- Structured events generated: 4
+- Failed login events identified: 3
+- Alert summaries generated: 1
+- Summaries successfully written: 1
+
+The generated JSONL output correctly identified three failed authentication attempts originating from `192.168.1.50` against `server01` within a five-minute window. Since the test configuration classified the server as critical and the configured threshold was three failed attempts, the aggregator correctly generated an alert (`alert: true`).
+
+The generated summary was successfully saved to `output/auth_summaries.jsonl`.
+
+**Technical Learning and Development:**
+
+Improved understanding of Python module imports, function interfaces, data exchange between independent components and the development of an end-to-end processing pipeline. Also developed practical experience coordinating file reading, event parsing, aggregation, threshold evaluation and structured output generation within a single application.
+
+**Outcome:**
+
+Successfully integrated the existing log reader, parser, aggregator and JSONL writer into a functional end-to-end authentication-log preprocessing pipeline. The successful execution demonstrated that the individual components could communicate and process authentication records from input to structured security summaries.
+
+Further work remains to validate below-threshold behaviour(as agreed by the team), connect the preprocessor to the group's asset inventory and complete integration testing with the wider COM732 system.
+
