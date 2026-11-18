@@ -77,7 +77,7 @@ def create_app_from_env():
     mode = os.environ.get("ENFORCE_MODE", "off")
     if mode == "stub":
         # stand-in decision plus E's driver; replace decide with C's function later
-        from decision_stub import decide as stub_decide
+        from policy_engine import decide as stub_decide
         from driver_adapter import apply_block as adapter_apply_block
 
         driver_audit = str(Path(audit_path).with_name("driver_audit.jsonl"))
