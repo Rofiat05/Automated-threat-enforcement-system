@@ -14,7 +14,7 @@ This folder is the "front door" of the enforcer. It receives an alert about repe
    3. freshness: the timestamp must be within 60 seconds (`freshness_check.py`)
    4. replay: a nonce can only be used once (`replay_check.py`)
    5. duplicate: the same attack in the same window is handled once (`duplicate_check.py`, `alert_id.py`)
-5. If the alert is accepted, `decide(alert)` answers "block" or "ignore" (for now the stand-in in `decision_stub.py`).
+5. If the alert is accepted, `decide(alert)` answers "block" or "ignore" (using C’s policy in policy_engine.py; the old stand-in is decision_stub.py `decision_stub.py`).
 6. For "block", `driver_adapter.py` calls E's driver, which adds a rule with an expiry time on the (mock) Cisco device.
 7. `audit_log.py` writes every outcome, one JSON line each.
 
@@ -56,7 +56,7 @@ cd enforcer_api
 python -m pytest
 ```
 
-You should see `155 passed`. One harmless warning about `httpx` may also appear; it comes from FastAPI's test tool, not from this code.
+You should see `156 passed`. One harmless warning about `httpx` may also appear; it comes from FastAPI's test tool, not from this code.
 
 ## Settings
 
@@ -147,7 +147,7 @@ One JSON line per outcome: `time`, `alert_id`, `decision`, `reason`. The `decisi
 | `duplicate_check.py`, `alert_id.py` | duplicate check (alert IDs kept 1 hour) |
 | `gatekeeper.py` | runs the five checks in order |
 | `front_door.py` | gatekeeper, then decision, then driver |
-| `decision_stub.py` | STAND-IN for C's `decide(alert)` |
+| `decision_stub.py` | Old stand-in, now replaced by C’s policy_engine.py with decide(alert) `decide(alert)` |
 | `driver_adapter.py` | turns a block decision into a request for E's driver |
 | `api.py` | the web endpoint |
 | `sign_helper.py`, `alert_sender.py` | signs and sends alerts |
@@ -167,7 +167,7 @@ One JSON line per outcome: `time`, `alert_id`, `decision`, `reason`. The `decisi
 
 ## Known limits
 
-- `decision_stub.py` is a stand-in. Its inventory, allowlist, block times and device name are placeholders until C's function replaces it.
+- `decision_stub.py` is now only a fallback. C's policy_engine.py makes the decisions. Block times (5 to 60 minutes, by how important the server is) and the device name are agreed defaults, and E's driver does not use the device name.
 - Expired blocks are removed only when the cleanup is run by hand.
 - The nonce and duplicate memories live in the running program, so they are lost on restart. E's driver still refuses to add the same block twice.
 - The alert times in B's format have no year.
