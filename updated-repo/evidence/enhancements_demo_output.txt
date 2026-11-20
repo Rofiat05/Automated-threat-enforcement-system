@@ -1,0 +1,121 @@
+
+==============================================================================
+[22:26:31] STEP 1/10 - Start the mock router and a driver with a protected list
+==============================================================================
+    Mock router : https://127.0.0.1:52293
+    Protected   : 192.0.2.1 (gateway), 192.0.2.53 (DNS), 10.0.0.0/24 (management LAN)
+    TTL options : max lifetime 7200 s, repeat-offender factor x2
+
+==============================================================================
+[22:26:32] STEP 2/10 - Protected addresses are never blocked
+==============================================================================
+    -> 192.0.2.1       REFUSED: 192.0.2.1 is on the protected list (192.0.2.1/32); protected addresses are never blocked (seq=None)
+    -> 10.0.0.25       REFUSED: 10.0.0.25 is on the protected list (10.0.0.0/24); protected addresses are never blocked (seq=None)
+    RESTCONF requests sent to the router: 0 (nothing was changed)
+
+==============================================================================
+[22:26:32] STEP 3/10 - Batch blocking: one alert, several source IPs
+==============================================================================
+    ALERT-101 lists: 203.0.113.7, 203.0.113.8, 203.0.113.7 (again), 'bad-ip'
+    -> 203.0.113.7     BLOCKED: Blocked (seq=10, expires 2026-11-19T17:36:32+00:00)
+    -> 203.0.113.8     BLOCKED: Blocked (seq=20, expires 2026-11-19T17:36:32+00:00)
+    -> bad-ip          INVALID: 'bad-ip' is not a valid IP address (seq=None)
+    Router> show access-lists
+      Extended IP access list BLOCKLIST
+          10 deny ip host 203.0.113.7 any
+          20 deny ip host 203.0.113.8 any
+          1000 permit ip any any
+
+==============================================================================
+[22:26:32] STEP 4/10 - Duplicate prevention: 4 driver processes block the same IP at once
+==============================================================================
+    -> 198.51.100.23   BLOCKED: Blocked (seq=30, expires 2026-11-19T17:36:32+00:00)
+    -> 198.51.100.23   ALREADY_BLOCKED: Duplicate of alert ALERT-102; IP already blocked, expiry unchanged (seq=30, expires 2026-11-19T17:36:32+00:00)
+    -> 198.51.100.23   ALREADY_BLOCKED: Duplicate of alert ALERT-102; IP already blocked, expiry unchanged (seq=30, expires 2026-11-19T17:36:32+00:00)
+    -> 198.51.100.23   ALREADY_BLOCKED: Duplicate of alert ALERT-102; IP already blocked, expiry unchanged (seq=30, expires 2026-11-19T17:36:32+00:00)
+    Deny lines for 198.51.100.23 on the router: 1 (one, no duplicate)
+
+==============================================================================
+[22:26:32] STEP 5/10 - TTL: lifetime cap, extend, repeat offenders
+==============================================================================
+    Every ~33 min a new alert arrives for 203.0.113.7 (1 h TTL, 2 h lifetime cap):
+    -> 203.0.113.7     ALREADY_BLOCKED: IP already blocked; expiry refreshed (seq=10, expires 2026-11-19T18:59:52+00:00)
+    -> 203.0.113.7     ALREADY_BLOCKED: IP already blocked; expiry refreshed up to the maximum block lifetime (7200 s) (seq=10, expires 2026-11-19T19:26:32+00:00)
+    -> 203.0.113.7     ALREADY_BLOCKED: IP already blocked; maximum block lifetime (7200 s) reached, expiry unchanged (seq=10, expires 2026-11-19T19:26:32+00:00)
+    
+    Operator extends 203.0.113.8 to 1 hour (record only, no router change):
+    -> 203.0.113.8     EXTENDED: Expiry extended (capped at maximum block lifetime) (seq=20, expires 2026-11-19T19:26:32+00:00)
+    
+    198.51.100.99 is blocked, expires, then attacks again -> TTL doubles:
+    -> 198.51.100.99   BLOCKED: Blocked (seq=40, expires 2026-11-19T19:16:32+00:00)
+    -> 198.51.100.99   BLOCKED: Blocked (repeat offender: 1 earlier block(s) in the last 7 days; TTL raised to 1200 s) (seq=30, expires 2026-11-19T19:36:34+00:00)
+
+==============================================================================
+[22:26:33] STEP 6/10 - Is this IP blocked? status() compares router and record
+==============================================================================
+    203.0.113.7     blocked          router seqs [10]
+    203.0.113.8     drift            router seqs []
+    192.0.2.77      blocked_foreign  router seqs [500]
+    192.0.2.50      not_blocked      router seqs []
+    (203.0.113.8 = drift: recorded but missing on the router - repaired in step 8)
+
+==============================================================================
+[22:26:33] STEP 7/10 - Recovery: a write that fails half-way, and a crash
+==============================================================================
+    The write for 198.51.100.50 reaches the router, but the verification read fails:
+    -> 198.51.100.50   ERROR: Could not read the ACL: HTTP 400 {"errors":{"error":[{"error-message":"Injected failure (mock)","error-tag":"resource-denied","error-type":"application"}]}}
+ (seq=None)
+    Rule left on router for 198.51.100.50: False (the partial write was undone)
+    
+    Simulated crash: a process wrote seq 700 and died before confirming it.
+    -> 198.51.100.60   RECOVERED: Interrupted block was found on the router and is tracked again; it expires as planned (seq=700, expires 2026-11-19T19:26:34+00:00)
+
+==============================================================================
+[22:26:33] STEP 8/10 - Router restart: reconcile, then reconcile --fix
+==============================================================================
+    The router reloaded without a saved configuration: the ACL is gone.
+    reconcile       -> ok=False, missing on router: ['203.0.113.7', '203.0.113.8', '198.51.100.60', '198.51.100.99']
+    reconcile --fix -> ok=True
+       203.0.113.7     seq 10   rule re-applied
+       203.0.113.8     seq 20   rule re-applied
+       198.51.100.60   seq 700  rule re-applied
+       198.51.100.99   seq 30   rule re-applied
+    Router> show access-lists
+      Extended IP access list BLOCKLIST
+          10 deny ip host 203.0.113.7 any
+          20 deny ip host 203.0.113.8 any
+          30 deny ip host 198.51.100.99 any
+          700 deny ip host 198.51.100.60 any
+          1000 permit ip any any
+
+==============================================================================
+[22:26:33] STEP 9/10 - Rollback by alert and emergency rollback-all
+==============================================================================
+    ALERT-101 turns out to be a false positive:
+    -> 203.0.113.8     UNBLOCKED: Block removed (seq=20)
+    (203.0.113.7 is kept: later alerts ALERT-110..112 confirmed it, so it now belongs to them)
+    Emergency: remove every block this driver created (admin rule 500 must stay):
+    -> 203.0.113.7     UNBLOCKED: Block removed (seq=10)
+    -> 198.51.100.60   UNBLOCKED: Block removed (seq=700)
+    -> 198.51.100.99   UNBLOCKED: Block removed (seq=30)
+    Router> show access-lists
+      Extended IP access list BLOCKLIST
+          500 deny ip host 192.0.2.77 any
+          1000 permit ip any any
+
+==============================================================================
+[22:26:34] STEP 10/10 - Safe online backup of blocks.db
+==============================================================================
+    Backup written: backups/blocks-demo.db  integrity_check=ok  records=7
+    
+    History (newest first):
+      198.51.100.60   seq=700  removed  by=rollback-all
+      198.51.100.50   seq=20   failed   by=rollback
+      198.51.100.99   seq=30   removed  by=rollback-all
+      198.51.100.99   seq=40   expired  by=ttl
+      198.51.100.23   seq=30   expired  by=ttl
+      203.0.113.8     seq=20   removed  by=alert-rollback
+      203.0.113.7     seq=10   removed  by=rollback-all
+
+==============================================================================
+Demonstration complete: all 10 steps shown.
