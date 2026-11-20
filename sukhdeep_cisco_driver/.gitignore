@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.db
+mock_certs/
+test_results/
+.env
+*.db.lock
+backups/
