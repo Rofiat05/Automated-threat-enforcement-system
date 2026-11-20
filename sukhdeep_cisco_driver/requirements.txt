@@ -1,5 +1,0 @@
-# Runtime (pinned versions - supply-chain safety)
-requests==2.34.2
-# Mock router (tests / offline demo)
-flask==3.1.3
-cryptography==50.0.2
