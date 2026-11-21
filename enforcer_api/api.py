@@ -1,5 +1,6 @@
 import os
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -86,7 +87,69 @@ def create_app_from_env():
             return adapter_apply_block(decision, audit_path=driver_audit)
 
         decide = stub_decide
-    elif mode != "off":
-        raise RuntimeError("ENFORCE_MODE must be off or stub")
+    elif mode == "merged":
+        import sys
 
-    return create_app(secret.encode("utf-8"), audit_path, decide, apply_block)
+        merged_folder = str(Path(__file__).resolve().parents[1] / "cisco_driver_merged")
+        if merged_folder not in sys.path:
+            sys.path.insert(0, merged_folder)
+
+        from policy_engine import decide as merged_decide
+        from merged_driver_adapter import apply_block as merged_apply_block
+
+        decide = merged_decide
+        apply_block = merged_apply_block
+
+    elif mode != "off":
+        raise RuntimeError("ENFORCE_MODE must be off, stub or merged")
+
+
+    app = create_app(secret.encode("utf-8"), audit_path, decide, apply_block)
+
+    if mode == "merged":
+        from cisco_driver.driver import CiscoDriver
+        from cisco_driver.restconf_client import RestconfClient
+        from cisco_driver.store import BlockStore
+        from cisco_driver.expiry_worker import ExpiryWorker
+
+        base_folder = Path(merged_folder)
+
+        client = RestconfClient(
+            state_path=os.environ.get(
+                "MERGED_ACL_PATH",
+                str(base_folder / "merged_acl_state.json")
+            )
+        )
+
+        store = BlockStore(
+            os.environ.get(
+                "MERGED_DB_PATH",
+                str(base_folder / "merged_blocks.db")
+            )
+        )
+
+        driver = CiscoDriver(
+            {"mock-router-1": client},
+            store
+        )
+
+        @asynccontextmanager
+        async def lifespan(app):
+            worker = ExpiryWorker(
+                driver,
+                interval=2.0,
+                recover=True
+            )
+
+            app.state.expiry_worker = worker
+            worker.start()
+
+            try:
+                yield
+            finally:
+                worker.stop()
+                store.close()
+
+        app.router.lifespan_context = lifespan
+
+    return app
