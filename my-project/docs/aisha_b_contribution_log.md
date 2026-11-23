@@ -424,13 +424,13 @@ The preprocessor involves several interconnected responsibilities, and developme
 
 ---
 
-## Summary of Progress: 5–8 November 2026
+## Summary of Progress: 5th - 8th November 2026
 
 During this reporting period, development focused primarily on testing and validating the individual modules of the Linux authentication log preprocessor.
 
 The HTTPS sender functionality was successfully tested, while the JSONL writer completed four successful unit tests. Further testing of the aggregation component resulted in eight successful unit tests, alongside successful verification of the critical asset alert threshold.
 
-An issue involving an incorrect sample log file path was also identified and resolved during aggregation testing.
+There was an issue involving an incorrect sample log file path. It was identified and successfully resolved during aggregation testing.
 
 By 8 November, the main development focus had shifted towards reviewing the remaining responsibilities, simplifying the timestamp parsing approach and preparing for further integration testing.
 
@@ -439,7 +439,7 @@ By 8 November, the main development focus had shifted towards reviewing the rema
 
 ### Contribution Entry — End-to-End Preprocessor Development and Integration
 
-**Date:** 9–15 November 2026
+**Date:** 9th –15th November 2026
 
 **Task:** Integration of the Linux authentication-log preprocessing components into a functional processing pipeline.
 
