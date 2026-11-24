@@ -1,0 +1,7 @@
+webserver,192.168.1.50,Medium
+dataserver,192.168.1.60,High
+pc01,192.168.1.70,Medium
+mailserver,192.168.1.80,High
+fileserver,192.168.1.90,High
+pc02,192.168.1.100,Low
+server01,192.168.1.110,Critical
