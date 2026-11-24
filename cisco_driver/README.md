@@ -5,7 +5,7 @@ This folder contains the Cisco network device integration
 
 **Project:** Python-Based Linux Authentication Monitoring and Automated Network Response System
 
-**Contributor:** Rofiat   
+**Contributor:** Person A – Rofiat Adegbemisola Toromade 
 **Component:** Cisco Driver and Network Enforcement
 
 ## 1. Overview
