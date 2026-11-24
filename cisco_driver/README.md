@@ -4,7 +4,7 @@ This folder contains the Cisco network device integration
 ## COM732: Computer Fundamentals and Problem Solving
 
 **Project:** Python-Based Linux Authentication Monitoring and Automated Network Response System
-**Contributor:** Rofiat
+**Contributor:** person A (Rofiat)
 **Component:** Cisco Driver and Network Enforcement
 
 ## 1. Overview
@@ -122,7 +122,7 @@ Through this work, I developed practical experience in:
 - Network access control concepts.
 - Automated software testing.
 - Audit logging and temporary enforcement controls.
-- GitHub collaboration and integration testing.
+- GitHub collaboration and integration testing. 
 
 ## 8. Current Status and Future Work
 
