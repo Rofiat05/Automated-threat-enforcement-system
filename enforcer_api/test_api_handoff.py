@@ -149,7 +149,7 @@ def test_stub_mode_ignores_a_server_that_is_not_in_the_inventory(
         monkeypatch, tmp_path):
     set_up_environment(monkeypatch, tmp_path, "stub")
     client = TestClient(create_app_from_env())
-    response = post(client, dict(GOOD, host="server01"), secret=b"some-secret")
+    response = post(client, dict(GOOD, host="unknown-host"), secret=b"some-secret")
     assert response.status_code == 202
     assert response.json()["action"] == "ignore"
     assert response.json()["detail"] == "server not in inventory"
