@@ -24,7 +24,7 @@ def fresh_alert(**changes):
     # a new alert whose time window starts right now, so each run is new
     start = time.time()
     alert = {
-        "host": "web01",
+        "host": "server01",
         "source_ip": "203.0.113.10",
         "window_start": time.strftime(TIME_FORMAT, time.localtime(start)),
         "window_end": time.strftime(TIME_FORMAT, time.localtime(start + 300)),
