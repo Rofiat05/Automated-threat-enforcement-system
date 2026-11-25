@@ -55,7 +55,7 @@ cd enforcer_api
 python -m pytest
 ```
  
-You should see `156 passed`.
+You should see `176 passed`.
  
 ## Settings
  
