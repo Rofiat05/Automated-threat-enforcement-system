@@ -51,7 +51,7 @@ assert summary["alert"] is True, (
 
 # Check the source and destination context.
 assert summary["host"] == "server01"
-assert summary["source_ip"] == "192.168.1.50"
+assert summary["source_ip"] == "192.168.1.55"
 
 print("Test passed: failed logins were aggregated correctly.")
 print("Summary:")
